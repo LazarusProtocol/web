@@ -1,0 +1,13 @@
+{
+  "name": "LazarusProtocol",
+  "short_name": "LazarusProtocol",
+  "description": "Keep your Soroban state alive on Stellar.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f4fff",
+  "icons": [
+    { "src": "/logo.png", "sizes": "400x400", "type": "image/png", "purpose": "any" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

@@ -1,0 +1,294 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* High-contrast editorial palette with semantic TTL status colors */
+:root {
+  --bg: #ffffff;
+  --fg: #0a0a0a;
+  --muted: rgba(10, 10, 10, 0.62);
+  --faint: rgba(10, 10, 10, 0.42);
+  --line: rgba(10, 10, 10, 0.12);
+  --soft: rgba(10, 10, 10, 0.05);
+  --blue: #1f4fff;
+  --on-blue: #ffffff;
+  --emerald: #059669;
+  --amber: #d97706;
+  --red: #dc2626;
+}
+
+.dark {
+  --bg: #0a0a0a;
+  --fg: #ffffff;
+  --muted: rgba(255, 255, 255, 0.64);
+  --faint: rgba(255, 255, 255, 0.42);
+  --line: rgba(255, 255, 255, 0.14);
+  --soft: rgba(255, 255, 255, 0.07);
+  --blue: #4d7cff;
+  --on-blue: #0a0a0a;
+  --emerald: #10b981;
+  --amber: #f59e0b;
+  --red: #ef4444;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-soft: var(--soft);
+  --color-blue: var(--blue);
+  --color-on-blue: var(--on-blue);
+  --color-emerald: var(--emerald);
+  --color-amber: var(--amber);
+  --color-red: var(--red);
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  * {
+    box-shadow: none;
+  }
+  ::selection {
+    background: var(--blue);
+    color: var(--on-blue);
+  }
+  :focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 3px;
+  }
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: opacity 0.15s, background-color 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .btn:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  .btn-primary {
+    background: var(--blue);
+    color: var(--on-blue);
+  }
+  .btn-primary:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--fg);
+    border-color: var(--fg);
+  }
+  .btn-outline:hover:not(:disabled) {
+    background: var(--soft);
+  }
+  .btn-sm {
+    padding: 0.55rem 1.1rem;
+    font-size: 0.85rem;
+  }
+  .field {
+    width: 100%;
+    border-radius: 9999px;
+    border: 1.5px solid var(--line);
+    background: transparent;
+    color: var(--fg);
+    padding: 0.9rem 1.4rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.15s;
+  }
+  .field::placeholder {
+    color: var(--faint);
+  }
+  .field:hover,
+  .field:focus {
+    border-color: var(--fg);
+    outline: none;
+  }
+  .eyebrow {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blue);
+  }
+  .link {
+    color: var(--blue);
+    font-weight: 600;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+  }
+  .link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .rule {
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Feedback: toasts + modals (flat, hairline, pill language) */
+.btn-danger {
+  background: var(--red);
+  color: #ffffff;
+}
+.btn-danger:hover:not(:disabled) {
+  opacity: 0.88;
+}
+.scrim {
+  background: color-mix(in srgb, var(--fg) 45%, transparent);
+}
+.toast {
+  animation: toast-in 0.22s ease-out;
+}
+.modal {
+  animation: modal-in 0.2s ease-out;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Stellar Wallets Kit modal — restyled to the Lazarus design language.
+   Tokens (--swk-*) come from the themes in services/stellarWallet.js; the rules below
+   reshape layout: flat panel, hairline border, pill wallet rows, mobile bottom sheet. */
+.stellar-wallets-kit {
+  font-family: var(--font-sans) !important;
+  padding: 1rem;
+}
+.stellar-wallets-kit > div:first-child {
+  background: color-mix(in srgb, var(--fg) 45%, transparent) !important;
+}
+.stellar-wallets-kit > section {
+  max-width: 26rem !important;
+  max-height: min(85dvh, 36rem) !important;
+  border: 1px solid var(--line);
+  border-radius: 2rem !important;
+  box-shadow: none !important;
+  animation: modal-in 0.2s ease-out;
+}
+.stellar-wallets-kit .glass {
+  backdrop-filter: none !important;
+  background: var(--bg) !important;
+}
+.stellar-wallets-kit header {
+  padding: 1.25rem 1.25rem 0.5rem !important;
+}
+.stellar-wallets-kit header h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.stellar-wallets-kit header button {
+  border-radius: 9999px !important;
+  cursor: pointer;
+}
+.stellar-wallets-kit header button:hover {
+  background: var(--soft) !important;
+}
+.stellar-wallets-kit ul {
+  padding: 0.5rem 1.25rem 1.25rem !important;
+  gap: 0.6rem !important;
+}
+.stellar-wallets-kit li {
+  border: 1.5px solid var(--line) !important;
+  border-radius: 9999px !important;
+  background: transparent !important;
+  padding: 0.65rem 1.1rem 0.65rem 0.7rem !important;
+  min-height: 3.5rem;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.stellar-wallets-kit li:hover {
+  border-color: var(--fg) !important;
+  background: var(--soft) !important;
+}
+.stellar-wallets-kit li:active {
+  border-color: var(--blue) !important;
+}
+.stellar-wallets-kit li p {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.stellar-wallets-kit li img {
+  border-radius: 9999px;
+}
+.stellar-wallets-kit li small {
+  border-radius: 9999px !important;
+  padding: 0.25rem 0.7rem !important;
+  font-weight: 600;
+  color: var(--blue) !important;
+  border-color: var(--line) !important;
+  background: transparent !important;
+}
+.stellar-wallets-kit footer {
+  padding: 0.85rem 1rem !important;
+  border-top: 1px solid var(--line) !important;
+}
+.stellar-wallets-kit footer p,
+.stellar-wallets-kit footer a {
+  color: var(--muted) !important;
+}
+.stellar-wallets-kit footer a {
+  color: var(--blue) !important;
+  text-underline-offset: 3px;
+}
+
+/* Mobile: bottom sheet */
+@media (max-width: 639px) {
+  .stellar-wallets-kit {
+    padding: 0;
+    align-items: flex-end !important;
+  }
+  .stellar-wallets-kit > section {
+    max-width: none !important;
+    max-height: 88dvh !important;
+    border-bottom: 0;
+    border-radius: 2rem 2rem 0 0 !important;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

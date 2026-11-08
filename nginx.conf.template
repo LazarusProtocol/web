@@ -1,0 +1,53 @@
+server {
+    listen 80;
+    server_name _;
+    server_tokens off;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Baseline HTTP Security Headers
+    add_header X-Frame-Options "DENY" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()" always;
+    add_header Cross-Origin-Opener-Policy "same-origin-allow-popups" always;
+
+    # Content Security Policy (allows Soroban RPC, Lazarus API, Stellar network endpoints, wallet bridges & fonts)
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://*.lazarusprotocol.online https://*.stellar.org https://albedo.link https://*.walletconnect.com https://*.walletconnect.org wss://*.walletconnect.com wss://*.walletconnect.org; frame-src 'self' https://albedo.link https://*.walletconnect.com https://*.walletconnect.org; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';" always;
+
+    # Reverse proxy API calls to the Lazarus Ingestion & Attestation Engine
+    location /api/ {
+        proxy_pass ${INDEXER_UPSTREAM}/api/;
+        proxy_http_version 1.1;
+        proxy_ssl_server_name on;
+        proxy_connect_timeout 10s;
+        proxy_read_timeout 30s;
+        proxy_send_timeout 30s;
+        proxy_set_header Host $proxy_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Deny access to hidden dotfiles (e.g. .git, .env)
+    location ~ /\.(?!well-known) {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    # SPA fallback for React routes
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Static asset caching (re-declaring headers due to Nginx add_header inheritance)
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2?)$ {
+        expires 7d;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-Frame-Options "DENY" always;
+    }
+}
+

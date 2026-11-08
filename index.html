@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LazarusProtocol — Automated Soroban State-Rent &amp; TTL Infrastructure on Stellar</title>
+    <meta
+      name="description"
+      content="LazarusProtocol is a decentralized keeper network and non-custodial escrow protocol on Stellar that proactively extends Soroban smart contract storage TTL so your users never pay cold-archival restoration fees."
+    />
+    <meta
+      name="keywords"
+      content="LazarusProtocol, Lazarus Protocol, Stellar, Soroban, TTL, state archival, CAP-0062, CAP-0066, storage rent, keeper network, smart contracts, USDC escrow, FROST threshold signatures"
+    />
+    <meta name="author" content="LazarusProtocol" />
+    <meta name="application-name" content="LazarusProtocol" />
+    <meta name="apple-mobile-web-app-title" content="LazarusProtocol" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Google Search Central & Crawler Directives -->
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta
+      name="googlebot"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+    <link rel="canonical" href="%VITE_SITE_URL%/" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+
+    <!-- Icons & Web App Manifest -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="400x400" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="LazarusProtocol" />
+    <meta property="og:locale" content="en_US" />
+    <meta
+      property="og:title"
+      content="LazarusProtocol — Automated Soroban State-Rent &amp; TTL Infrastructure on Stellar"
+    />
+    <meta
+      property="og:description"
+      content="LazarusProtocol is a decentralized keeper network and non-custodial escrow protocol on Stellar that proactively extends Soroban smart contract storage TTL so your users never pay cold-archival restoration fees."
+    />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:image" content="%VITE_SITE_URL%/og-image.png" />
+    <meta property="og:image:secure_url" content="%VITE_SITE_URL%/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="LazarusProtocol — Decentralized Soroban State-Rent &amp; TTL Warming Infrastructure on Stellar"
+    />
+
+    <!-- Twitter / X Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@BossEmmanuel30" />
+    <meta name="twitter:creator" content="@BossEmmanuel30" />
+    <meta
+      name="twitter:title"
+      content="LazarusProtocol — Automated Soroban State-Rent &amp; TTL Infrastructure on Stellar"
+    />
+    <meta
+      name="twitter:description"
+      content="LazarusProtocol is a decentralized keeper network and non-custodial escrow protocol on Stellar that proactively extends Soroban smart contract storage TTL so your users never pay cold-archival restoration fees."
+    />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/og-image.png" />
+    <meta
+      name="twitter:image:alt"
+      content="LazarusProtocol — Decentralized Soroban State-Rent &amp; TTL Warming Infrastructure on Stellar"
+    />
+
+    <!-- Google Rich Results Structured Data (Schema.org JSON-LD) -->
+    <script id="ld-json-seo" type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "%VITE_SITE_URL%/#org",
+            "name": "LazarusProtocol",
+            "alternateName": "Lazarus Protocol",
+            "url": "%VITE_SITE_URL%/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "%VITE_SITE_URL%/logo.png",
+              "width": 400,
+              "height": 400
+            },
+            "sameAs": [
+              "https://github.com/LazarusProtocol",
+              "https://x.com/BossEmmanuel30"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "%VITE_SITE_URL%/#website",
+            "url": "%VITE_SITE_URL%/",
+            "name": "LazarusProtocol",
+            "alternateName": ["Lazarus Protocol", "Lazarus"],
+            "publisher": { "@id": "%VITE_SITE_URL%/#org" },
+            "inLanguage": "en-US",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "%VITE_SITE_URL%/inspect?c={search_term_string}"
+              },
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "%VITE_SITE_URL%/#app",
+            "name": "LazarusProtocol",
+            "applicationCategory": "DeveloperApplication",
+            "applicationSubCategory": "Blockchain State-Rent & Keeper Infrastructure",
+            "operatingSystem": "Web, Stellar Soroban",
+            "url": "%VITE_SITE_URL%/",
+            "publisher": { "@id": "%VITE_SITE_URL%/#org" },
+            "description": "Decentralized keeper network and non-custodial Soroban escrow vault that proactively extends Persistent, Instance, and ContractCode storage TTL on Stellar.",
+            "featureList": [
+              "Non-custodial Soroban escrow vault with global and per-contract hourly outflow limits",
+              "4-stage storage key discovery (Hubble BigQuery, RPC catch-up replay, protocol adapters, live poller)",
+              "2-of-3 FROST Threshold Ed25519 Attestation Enclave",
+              "Autonomous keeper daemon with deterministic cohort sharding and an emergency bypass under 2,000 ledgers"
+            ],
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            }
+          },
+          {
+            "@type": "WebPage",
+            "@id": "%VITE_SITE_URL%/#webpage",
+            "url": "%VITE_SITE_URL%/",
+            "name": "LazarusProtocol — Automated Soroban State-Rent & TTL Infrastructure on Stellar",
+            "description": "LazarusProtocol is a decentralized keeper network and non-custodial escrow protocol on Stellar that proactively extends Soroban smart contract storage TTL so your users never pay cold-archival restoration fees.",
+            "isPartOf": { "@id": "%VITE_SITE_URL%/#website" },
+            "about": { "@id": "%VITE_SITE_URL%/#app" },
+            "inLanguage": "en-US"
+          }
+        ]
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      // Apply device theme (or explicit user override) before paint to avoid a flash.
+      try {
+        localStorage.removeItem('lazarus-theme');
+        var override = localStorage.getItem('lazarus-theme-override');
+        var isDark = override
+          ? override === 'dark'
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', isDark);
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <noscript>
+      <main>
+        <h1>LazarusProtocol — Automated Soroban State-Rent &amp; TTL Infrastructure on Stellar</h1>
+        <p>
+          LazarusProtocol is a decentralized keeper network and non-custodial escrow vault that proactively extends Soroban smart contract storage TTL on Stellar (CAP-0062 / CAP-0066), ensuring your users never pay cold-storage restoration penalties.
+        </p>
+        <p>Please enable JavaScript to inspect contract footprints, manage escrow vaults, and operate keepers.</p>
+      </main>
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

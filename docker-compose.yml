@@ -1,0 +1,35 @@
+name: lazarus-web
+
+services:
+  web:
+    container_name: lazarus-web
+    build:
+      context: .
+      target: production
+      args:
+        VITE_PROJECT_NAME: ${VITE_PROJECT_NAME:-LazarusProtocol}
+        VITE_SITE_URL: ${VITE_SITE_URL:-http://localhost:8080}
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api/v1}
+        VITE_STELLAR_NETWORK: ${VITE_STELLAR_NETWORK:-TESTNET}
+        VITE_SOROBAN_RPC_URL: ${VITE_SOROBAN_RPC_URL:-https://soroban-testnet.stellar.org}
+        VITE_LAZARUS_VAULT_CONTRACT_ID: ${VITE_LAZARUS_VAULT_CONTRACT_ID:-CCWAH7BVPGYOEBPRFWPZIONBYUCCQH7OARGZLOD6ZV66SOAFBVA2DHD5}
+        VITE_SAC_TOKEN_CONTRACT_ID: ${VITE_SAC_TOKEN_CONTRACT_ID:-CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC}
+        VITE_ORACLE_PUBKEY: ${VITE_ORACLE_PUBKEY:-197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61}
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      INDEXER_UPSTREAM: ${INDEXER_UPSTREAM:-https://api.lazarusprotocol.online}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    networks:
+      - lazarus-net
+    restart: unless-stopped
+
+networks:
+  lazarus-net:
+    driver: bridge
+
+

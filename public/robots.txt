@@ -1,0 +1,12 @@
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: %VITE_SITE_URL%/sitemap.xml
