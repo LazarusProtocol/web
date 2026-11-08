@@ -337,7 +337,7 @@ export default function Docs() {
               <div className="flex items-center justify-between gap-2 border-b border-line/60 pb-3">
                 <span className="text-sm font-mono uppercase tracking-wider text-muted">Stellar Testnet Deployment</span>
                 <a
-                  href="https://stellar.expert/explorer/testnet/contract/CCWAH7BVPGYOEBPRFWPZIONBYUCCQH7OARGZLOD6ZV66SOAFBVA2DHD5"
+                  href="https://stellar.expert/explorer/testnet/contract/CBKFA2F7RUDGLJNE3K5X2XEXVXRJQ5AMB2NSPREDTATE2ZHDALFKPGUR"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm font-medium text-blue hover:underline inline-flex items-center gap-1"
@@ -349,8 +349,8 @@ export default function Docs() {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                   <dt className="text-fg font-sans text-sm">Vault Contract ID:</dt>
                   <div className="flex items-center gap-2">
-                    <dd className="break-all text-xs">CCWAH7BVPGYOEBPRFWPZIONBYUCCQH7OARGZLOD6ZV66SOAFBVA2DHD5</dd>
-                    <Copy text="CCWAH7BVPGYOEBPRFWPZIONBYUCCQH7OARGZLOD6ZV66SOAFBVA2DHD5" />
+                    <dd className="break-all text-xs">CBKFA2F7RUDGLJNE3K5X2XEXVXRJQ5AMB2NSPREDTATE2ZHDALFKPGUR</dd>
+                    <Copy text="CBKFA2F7RUDGLJNE3K5X2XEXVXRJQ5AMB2NSPREDTATE2ZHDALFKPGUR" />
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
@@ -545,7 +545,7 @@ export default function Docs() {
                 <CodeBlock
                   title="SOROBAN CLI - EMERGENCY WITHDRAWAL"
                   code="stellar contract invoke \
-  --id CCWAH7BVPGYOEBPRFWPZIONBYUCCQH7OARGZLOD6ZV66SOAFBVA2DHD5 \
+  --id CBKFA2F7RUDGLJNE3K5X2XEXVXRJQ5AMB2NSPREDTATE2ZHDALFKPGUR \
   --source-account YOUR_ADMIN_KEY \
   --network testnet \
   -- emergency_withdraw \
@@ -639,7 +639,7 @@ docker run -d \\
   -e LAZARUS_KEEPER_SECRET="S...YOUR_STELLAR_SECRET_KEY" \\
   -e LAZARUS_INDEXER_API_URL="https://api.lazarusprotocol.online" \\
   -e LAZARUS_RPC_URL="https://soroban-testnet.stellar.org" \\
-  -e LAZARUS_VAULT_CONTRACT_ID="CCWAH7BVPGYOEBPRFWPZIONBYUCCQH7OARGZLOD6ZV66SOAFBVA2DHD5" \\
+  -e LAZARUS_VAULT_CONTRACT_ID="CBKFA2F7RUDGLJNE3K5X2XEXVXRJQ5AMB2NSPREDTATE2ZHDALFKPGUR" \\
   ghcr.io/lazarusprotocol/keeper-daemon:latest`}
                 />
               </div>
@@ -699,7 +699,7 @@ PYTHONPATH=. python3 -m keeper.cli --once`}
                     </tr>
                     <tr>
                       <td className="p-3 text-fg">LAZARUS_VAULT_CONTRACT_ID</td>
-                      <td className="p-3 text-muted">CCWAH7...</td>
+                      <td className="p-3 text-muted">CBKFA2...</td>
                       <td className="p-3 font-sans text-muted">LazarusVault Soroban contract ID for bounty redemptions</td>
                     </tr>
                     <tr>
