@@ -160,13 +160,12 @@
       rel="stylesheet"
     />
     <script>
-      // Apply device theme (or explicit user override) before paint to avoid a flash.
+      // Default to light mode unless the user explicitly toggled dark mode.
       try {
         localStorage.removeItem('lazarus-theme');
-        var override = localStorage.getItem('lazarus-theme-override');
-        var isDark = override
-          ? override === 'dark'
-          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        localStorage.removeItem('lazarus-theme-override');
+        var override = localStorage.getItem('lazarus-theme-override-v2');
+        var isDark = override === 'dark';
         document.documentElement.classList.toggle('dark', isDark);
       } catch (e) {}
     </script>
