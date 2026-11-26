@@ -198,24 +198,24 @@ export default function Vaults({ wallet }) {
   }
 
   const handleWithdraw = async () => {
-    const val = parseFloat(amount)
-    if (!val || val <= 0 || !selectedVault) return
-    const deductStroops = Math.round(val * STROOP_FACTOR)
+    if (!selectedVault) return
     const currentBalance = Number(selectedVault.escrow_balance) || 0
-    if (deductStroops > currentBalance) {
-      const msg = 'Withdrawal amount exceeds available escrow reserve.'
+    if (currentBalance <= 0) {
+      const msg = 'No unspent escrow reserve available to withdraw.'
       setErrorMsg(msg)
-      toast.warning(msg, { title: 'Amount too high' })
+      toast.warning(msg, { title: 'Empty escrow' })
       return
     }
+    const fullUsdc = currentBalance / STROOP_FACTOR
     const ok = await confirm({
-      title: 'Confirm withdrawal',
-      body: 'Funds leave the escrow reserve that pays keepers. Your vault may run out of bumps sooner.',
+      title: 'Confirm emergency withdrawal',
+      body: 'LazarusVault.emergency_withdraw refunds your entire unspent escrow reserve on-chain and pauses monitoring for this contract.',
       details: [
-        ['Amount', `${val} USDC`],
+        ['Full Refund', `${usd(fullUsdc)} USDC`],
         ['Destination', short(wallet.address)],
       ],
-      confirmLabel: 'Confirm withdrawal',
+      confirmLabel: 'Withdraw all & pause',
+      tone: 'danger',
     })
     if (!ok) return
     setActionBusy(true)
@@ -226,13 +226,12 @@ export default function Vaults({ wallet }) {
         isDemoWallet: wallet.isDemo,
         action: 'emergency_withdraw',
         targetContract: selectedVault.contract_id,
-        amountStroops: deductStroops,
+        amountStroops: currentBalance,
       })
-      const newBalance = currentBalance - deductStroops
 
       const updated = await api.updateContract(
         selectedVault.contract_id,
-        { escrow_balance: newBalance },
+        { escrow_balance: 0, is_active: false },
         wallet.address
       )
       setVaults((vs) =>
@@ -242,8 +241,8 @@ export default function Vaults({ wallet }) {
       )
       setAmount('')
       toast.success(
-        `${val} USDC withdrawn from escrow (${auth.txHash.slice(0, 8)}…).`,
-        { title: 'Withdrawal complete' }
+        `${usd(fullUsdc)} USDC withdrawn from escrow (${auth.txHash.slice(0, 8)}…).`,
+        { title: 'Emergency withdrawal complete' }
       )
     } catch (err) {
       const msg = err?.message || 'Withdrawal update failed.'
@@ -277,20 +276,26 @@ export default function Vaults({ wallet }) {
     setErrorMsg('')
     try {
       const depositStroops = Math.round(dep * STROOP_FACTOR)
+      const fixedBountyStroops = Math.round(b * STROOP_FACTOR)
+      const minThreshold = 20000
+      const bumpTarget = 500000
       const auth = await authorizeVaultAction({
         walletAddress: wallet.address,
         isDemoWallet: wallet.isDemo,
         action: 'register_contract',
         targetContract: contractId,
         amountStroops: depositStroops,
+        fixedBountyStroops,
+        minThreshold,
+        bumpTarget,
       })
       const newContract = await api.createContract({
         contract_id: contractId,
         client_address: wallet.address,
         escrow_balance: depositStroops,
-        fixed_bounty: Math.round(b * STROOP_FACTOR),
-        min_ledger_threshold: 20000,
-        bump_target: 500000,
+        fixed_bounty: fixedBountyStroops,
+        min_ledger_threshold: minThreshold,
+        bump_target: bumpTarget,
         protocol_type: draft.protocol,
         is_active: true,
         auto_bootstrap: true,
@@ -507,15 +512,10 @@ export default function Vaults({ wallet }) {
               <button
                 type="button"
                 className="btn btn-outline"
-                disabled={
-                  actionBusy ||
-                  !amount ||
-                  parseFloat(amount) <= 0 ||
-                  parseFloat(amount) > escrowUsdc
-                }
+                disabled={actionBusy || escrowUsdc <= 0}
                 onClick={handleWithdraw}
               >
-                Withdraw
+                Emergency Withdraw All
               </button>
             </div>
 

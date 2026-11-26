@@ -4,6 +4,7 @@ import { Dot, Legend, RiskLabel } from '../components/Ttl'
 import { useFeedback } from '../hooks/useFeedback'
 import { navigate, queryParam } from '../hooks/useRoute'
 import { api, isValidContractId, sanitizeInput } from '../services/api'
+import { inspectContractOnChain } from '../services/stellarWallet'
 
 function short(id) {
   if (!id) return ''
@@ -19,6 +20,8 @@ function ledgersToDays(ledgers) {
 export default function Inspect({ wallet }) {
   const { toast } = useFeedback()
   const initial = queryParam('c') || ''
+  const initialNet = queryParam('net') === 'mainnet' ? 'mainnet' : 'testnet'
+  const [network, setNetwork] = useState(initialNet)
   const [input, setInput] = useState(initial)
   const [target, setTarget] = useState(initial)
   const [enrolledContracts, setEnrolledContracts] = useState([])
@@ -28,6 +31,7 @@ export default function Inspect({ wallet }) {
   const [keysList, setKeysList] = useState([])
   const [contractRecord, setContractRecord] = useState(null)
   const [isEnrolled, setIsEnrolled] = useState(false)
+  const [liveRpcState, setLiveRpcState] = useState(null)
   const [bootstrapping, setBootstrapping] = useState(false)
 
   useEffect(() => {
@@ -52,7 +56,7 @@ export default function Inspect({ wallet }) {
     }
   }, [initial])
 
-  const fetchContractData = useCallback(async (contractId) => {
+  const fetchContractData = useCallback(async (contractId, selectedNetwork = 'testnet') => {
     const cleaned = sanitizeInput(contractId).toUpperCase()
     if (!cleaned) return
     if (!isValidContractId(cleaned)) {
@@ -63,26 +67,57 @@ export default function Inspect({ wallet }) {
     setLoading(true)
     setError('')
     try {
-      try {
-        const record = await api.getContract(cleaned)
-        setContractRecord(record)
-        setIsEnrolled(true)
-      } catch (err) {
-        if (err.status === 404) {
-          setContractRecord(null)
-          setIsEnrolled(false)
-        } else {
-          throw err
-        }
-      }
+      const rpcPromise = inspectContractOnChain(cleaned, selectedNetwork).catch(() => null)
+      const indexerPromise =
+        selectedNetwork === 'testnet'
+          ? Promise.all([
+              api.getContract(cleaned).catch((err) => (err.status === 404 ? null : Promise.reject(err))),
+              api.getHeatmap(cleaned).catch(() => null),
+              api.getContractKeys(cleaned).catch(() => []),
+            ])
+          : Promise.resolve([null, null, []])
 
-      const diag = await api.getHeatmap(cleaned)
-      setHeatmapData(diag)
+      const [rpcRes, [record, diag, indexerKeys]] = await Promise.all([rpcPromise, indexerPromise])
 
-      const keys = await api.getContractKeys(cleaned)
-      setKeysList(Array.isArray(keys) ? keys : [])
+      setLiveRpcState(rpcRes)
+      setContractRecord(record)
+      setIsEnrolled(Boolean(record))
+
+      const currentLedger = rpcRes?.current_ledger || diag?.current_ledger || 500000
+      const mergedByHash = new Map()
+      ;(Array.isArray(indexerKeys) ? indexerKeys : []).forEach((k) => {
+        mergedByHash.set(k.key_hash, k)
+      })
+      ;(rpcRes?.keys || []).forEach((k) => {
+        mergedByHash.set(k.key_hash, k)
+      })
+      const mergedKeys = Array.from(mergedByHash.values())
+      setKeysList(mergedKeys)
+
+      const tiers = { healthy: [], warming: [], critical: [] }
+      mergedKeys.forEach((k) => {
+        const remaining = (k.live_until_ledger_seq || 0) - currentLedger
+        const tier = remaining <= 2000 ? 'critical' : remaining <= 518400 ? 'warming' : 'healthy'
+        tiers[tier].push({
+          contract_id: cleaned,
+          key_hash: k.key_hash,
+          live_until_ledger_seq: k.live_until_ledger_seq,
+          remaining_ledgers: remaining,
+          tier,
+        })
+      })
+      setHeatmapData({
+        current_ledger: currentLedger,
+        summary: {
+          healthy_count: tiers.healthy.length,
+          warming_count: tiers.warming.length,
+          critical_count: tiers.critical.length,
+          total_monitored_keys: mergedKeys.length,
+        },
+        tiers,
+      })
     } catch (err) {
-      setError(err?.message || 'Failed to query contract storage from indexer.')
+      setError(err?.message || 'Failed to query contract storage from Soroban RPC / indexer.')
     } finally {
       setLoading(false)
     }
@@ -91,10 +126,10 @@ export default function Inspect({ wallet }) {
   useEffect(() => {
     if (!target) return
     const timer = setTimeout(() => {
-      fetchContractData(target)
+      fetchContractData(target, network)
     }, 0)
     return () => clearTimeout(timer)
-  }, [target, fetchContractData])
+  }, [target, network, fetchContractData])
 
   const submit = (e) => {
     e.preventDefault()
@@ -181,14 +216,26 @@ export default function Inspect({ wallet }) {
       title="Inspect a contract"
       intro="Paste any 56-character Soroban contract ID to inspect live storage TTLs, ledger countdowns, and cold-archive risks verified by the LazarusProtocol Indexer."
     >
-      <form onSubmit={submit} className="mt-10 flex max-w-2xl flex-col gap-3 sm:flex-row" role="search">
+      <form onSubmit={submit} className="mt-10 flex max-w-3xl flex-col gap-3 sm:flex-row" role="search">
+        <label htmlFor="inspect-network" className="sr-only">
+          Stellar Network
+        </label>
+        <select
+          id="inspect-network"
+          className="field sm:w-36 sm:shrink-0"
+          value={network}
+          onChange={(e) => setNetwork(e.target.value)}
+        >
+          <option value="testnet">Testnet</option>
+          <option value="mainnet">Mainnet</option>
+        </select>
         <label htmlFor="inspect-id" className="sr-only">
           Contract ID
         </label>
         <input
           id="inspect-id"
           className="field font-mono text-sm"
-          placeholder="Paste 56-char Soroban contract ID (C...)"
+          placeholder="Paste any 56-char Soroban contract ID (C...)"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           autoComplete="off"
@@ -246,14 +293,19 @@ export default function Inspect({ wallet }) {
                 >
                   {isEnrolled ? `Enrolled (${contractRecord?.protocol_type})` : 'Not Enrolled'}
                 </span>
+                {liveRpcState?.found && (
+                  <span className="rounded-full bg-blue/15 px-2.5 py-0.5 text-xs font-medium text-blue">
+                    Live Soroban RPC ({network})
+                  </span>
+                )}
               </div>
               <h2 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
-                {!isEnrolled
-                  ? 'Contract not yet enrolled in LazarusProtocol Indexer.'
-                  : attentionCount > 0
-                    ? `${attentionCount} ${attentionCount === 1 ? 'key needs' : 'keys need'} attention soon.`
-                    : keysList.length > 0
-                      ? 'All indexed keys healthy.'
+                {attentionCount > 0
+                  ? `${attentionCount} ${attentionCount === 1 ? 'key needs' : 'keys need'} attention soon.`
+                  : keysList.length > 0
+                    ? 'All inspected keys healthy.'
+                    : liveRpcState && !liveRpcState.found
+                      ? `Contract not found on Stellar ${network}.`
                       : 'No storage keys indexed yet.'}
               </h2>
             </div>

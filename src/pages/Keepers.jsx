@@ -104,6 +104,8 @@ export default function Keepers({ wallet }) {
         action: 'ExtendFootprintTTLOp',
         targetContract: targetKey.contract_id,
         amountStroops: targetKey.fixed_bounty || 1000000,
+        keyXdr: targetKey.key_xdr,
+        extendTo: targetKey.bump_ledgers_delta || targetKey.bump_target || 500000,
       })
       const vRes = await api.requestVoucher({
         tx_hash: auth.txHash,
@@ -153,11 +155,20 @@ export default function Keepers({ wallet }) {
         isDemoWallet: wallet.isDemo,
         action: 'record_bump_batch',
         amountStroops: Math.round(total * STROOP_FACTOR),
+        vouchers: batch.map((v) => ({
+          keeper: wallet.address,
+          target_contract: v.target_contract,
+          ledger_bumped: v.ledger_bumped,
+          bounty_amount: v.bounty_amount,
+          nonce: v.nonce,
+          signature: v.signature,
+        })),
       })
       const nonces = batch.map((v) => v.nonce)
       const res = await api.redeemVouchers({
         keeper_address: wallet.address,
         nonces,
+        tx_hash: auth.txHash,
       })
       await loadKeeperData(wallet.address)
       result({
